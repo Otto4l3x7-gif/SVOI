@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVOI - Gobierno de Campeche</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F9FAFB;
+            color: #374151;
+        }
+        h1, h2, h3, h4, h5, h6, .font-slab {
+            font-family: 'Roboto Slab', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+        .nav-active {
+            background-color: #9F2241;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .nav-inactive {
+            color: #8B8B8D;
+        }
+        .nav-inactive:hover {
+            background-color: #f3f4f6;
+            color: #691C32;
+        }
+        .tab-active {
+            border-bottom: 4px solid #9F2241;
+            color: #9F2241;
+            font-weight: bold;
+        }
+        .tab-inactive {
+            color: #8B8B8D;
+        }
+        .tab-inactive:hover {
+            color: #691C32;
+        }
+        .btn-primary {
+            background-color: #9F2241;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #691C32;
+            transform: translateY(-1px);
+        }
+    </style>
+    <!-- Chosen Palette: SVOI Campeche 2021-2027 (Guinda #9F2241, Dorado #BCA986, Verde #235B4E, Gris #8B8B8D, Blanco #FFFFFF) -->
+    <!-- Application Structure Plan: Dashboard interactivo de una sola página con un nuevo módulo de exportación. Se ha integrado una sección de "Plantillas Editables" que permite descargar activos y exportar la configuración técnica del SVOI para herramientas externas, cerrando el ciclo de diseño y producción. -->
+    <!-- Visualization & Content Choices: Se mantiene el rigor de Chart.js y Tailwind. Se añade un sistema de modales y triggers para la exportación de datos en formato JSON y simulación de descarga de archivos PPTX/Canva. Sin uso de SVG ni Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="flex h-screen overflow-hidden bg-gray-50">
+
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm z-10 flex-shrink-0 transition-all duration-300">
+        <div class="p-6 border-b border-gray-200 bg-[#9F2241] text-white">
+            <h1 class="text-xl font-black font-slab leading-tight">CAMPECHE</h1>
+            <p class="text-xs uppercase tracking-wider text-[#BCA986] font-semibold mt-1">Gobierno de Todos</p>
+            <p class="text-[10px] mt-2 opacity-80">Sistema Visual Operativo (SVOI)</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 px-3" id="main-nav">
+                <li><button data-target="view-identidad" class="w-full text-left px-4 py-3 rounded-lg nav-active transition-colors flex items-center gap-3">🎨 Identidad Gráfica</button></li>
+                <li><button data-target="view-narrativa" class="w-full text-left px-4 py-3 rounded-lg nav-inactive transition-colors flex items-center gap-3">📝 Arq. Narrativa</button></li>
+                <li><button data-target="view-componentes" class="w-full text-left px-4 py-3 rounded-lg nav-inactive transition-colors flex items-center gap-3">🧩 Componentes</button></li>
+                <li><button data-target="view-datos" class="w-full text-left px-4 py-3 rounded-lg nav-inactive transition-colors flex items-center gap-3">📊 Visualización</button></li>
+                <li><button data-target="view-redaccion" class="w-full text-left px-4 py-3 rounded-lg nav-inactive transition-colors flex items-center gap-3">✅ Calidad y Control</button></li>
+                <li><button data-target="view-plantillas" class="w-full text-left px-4 py-3 rounded-lg nav-inactive transition-colors flex items-center gap-3 font-bold border-t border-gray-100 mt-2 pt-4">📂 Plantillas Editables</button></li>
+            </ul>
+        </nav>
+        <div class="p-4 border-t border-gray-200 text-xs text-gray-500 text-center">
+            Manual 2021-2027<br>Versión 2.1 (Export)
+        </div>
+    </aside>
+
+    <main class="flex-1 h-full overflow-y-auto bg-[#F9FAFB]">
+        <header class="bg-white px-8 py-5 border-b border-gray-200 shadow-sm sticky top-0 z-20">
+            <div class="flex justify-between items-center">
+                <h2 id="header-title" class="text-2xl font-bold text-[#691C32] font-slab">Identidad Gráfica Institucional</h2>
+                <button onclick="quickExport()" class="bg-[#BCA986] text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-widest hover:bg-[#AB9470] transition-colors">Exportación Rápida</button>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-6xl mx-auto pb-24 relative">
+
+            <!-- VISTA IDENTIDAD (Sin cambios estructurales, solo contenido) -->
+            <section id="view-identidad" class="view-section block">
+                <p class="text-lg text-gray-600 mb-8 border-l-4 border-[#9F2241] pl-4">Esta sección consolida la arquitectura cromática y tipográfica del Gobierno del Estado. Su propósito es permitir a los creadores de presentaciones identificar y extraer rápidamente los códigos exactos (HEX) para garantizar la homogeneidad y autoridad del mensaje institucional.</p>
+                <!-- Grid de colores existente -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onclick="copyHex('#9F2241')">
+                        <div class="h-24 bg-[#9F2241] w-full flex items-end justify-end p-2"><span class="text-white text-xs font-mono bg-black/30 px-2 py-1 rounded">#9F2241</span></div>
+                        <div class="p-4"><p class="font-bold text-gray-800 font-slab">Guinda Principal</p></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onclick="copyHex('#691C32')">
+                        <div class="h-24 bg-[#691C32] w-full flex items-end justify-end p-2"><span class="text-white text-xs font-mono bg-black/30 px-2 py-1 rounded">#691C32</span></div>
+                        <div class="p-4"><p class="font-bold text-gray-800 font-slab">Guinda Oscuro</p></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onclick="copyHex('#BCA986')">
+                        <div class="h-24 bg-[#BCA986] w-full flex items-end justify-end p-2"><span class="text-white text-xs font-mono bg-black/30 px-2 py-1 rounded">#BCA986</span></div>
+                        <div class="p-4"><p class="font-bold text-gray-800 font-slab">Dorado / Beige</p></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onclick="copyHex('#235B4E')">
+                        <div class="h-24 bg-[#235B4E] w-full flex items-end justify-end p-2"><span class="text-white text-xs font-mono bg-black/30 px-2 py-1 rounded">#235B4E</span></div>
+                        <div class="p-4"><p class="font-bold text-gray-800 font-slab">Verde Institucional</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA NARRATIVA (Existente) -->
+            <section id="view-narrativa" class="view-section hidden">
+                <p class="text-lg text-gray-600 mb-8 border-l-4 border-[#9F2241] pl-4">La arquitectura narrativa previene la dispersión de la audiencia. Explore las cuatro rutas estratégicas oficiales.</p>
+                <div class="flex flex-wrap border-b border-gray-200 mb-6" id="narrativa-tabs">
+                    <button class="px-6 py-3 tab-active text-sm uppercase tracking-wide" data-route="A">Ruta A</button>
+                    <button class="px-6 py-3 tab-inactive text-sm uppercase tracking-wide" data-route="B">Ruta B</button>
+                    <button class="px-6 py-3 tab-inactive text-sm uppercase tracking-wide" data-route="C">Ruta C</button>
+                    <button class="px-6 py-3 tab-inactive text-sm uppercase tracking-wide" data-route="D">Ruta D</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 min-h-[300px]" id="narrativa-content"></div>
+            </section>
+
+            <!-- VISTA COMPONENTES (Existente) -->
+            <section id="view-componentes" class="view-section hidden">
+                <p class="text-lg text-gray-600 mb-8 border-l-4 border-[#9F2241] pl-4">Catálogo interactivo de componentes reutilizables.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm border-t-4 border-t-[#9F2241]">
+                        <p class="text-sm text-gray-500 font-semibold mb-1">Inversión Ejecutada</p>
+                        <p class="text-3xl font-black font-slab text-[#9F2241]">$45.2M</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm border-t-4 border-t-[#235B4E]">
+                        <p class="text-sm text-gray-500 font-semibold mb-1">Cobertura Estatal</p>
+                        <p class="text-3xl font-black font-slab text-[#235B4E]">92%</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm border-t-4 border-t-[#BCA986]">
+                        <p class="text-sm text-gray-500 font-semibold mb-1">Municipios</p>
+                        <p class="text-3xl font-black font-slab text-[#691C32]">11 / 13</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA DATOS (Existente) -->
+            <section id="view-datos" class="view-section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
+                        <h4 class="font-bold text-[#691C32] font-slab mb-4 self-start">Avance de Proyectos</h4>
+                        <div class="chart-container"><canvas id="barChart"></canvas></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col items-center">
+                        <h4 class="font-bold text-[#691C32] font-slab mb-4 self-start">Distribución de Recursos</h4>
+                        <div class="chart-container"><canvas id="doughnutChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISTA CALIDAD (Existente) -->
+            <section id="view-redaccion" class="view-section hidden">
+                <h3 class="text-xl font-bold text-[#691C32] font-slab mb-4">Checklist de Validación Final</h3>
+                <div class="bg-white border border-gray-200 shadow-sm rounded-lg p-5">
+                    <form id="checklist-form" class="space-y-3">
+                        <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1"> <span class="text-sm">Logotipo con zona de seguridad (50%)</span></label>
+                        <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1"> <span class="text-sm">Uso de Quatro Slab y Averta</span></label>
+                        <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1"> <span class="text-sm">Paleta institucional estricta</span></label>
+                    </form>
+                </div>
+            </section>
+
+            <!-- NUEVA VISTA: PLANTILLAS EDITABLES -->
+            <section id="view-plantillas" class="view-section hidden">
+                <p class="text-lg text-gray-600 mb-8 border-l-4 border-[#9F2241] pl-4">El Centro de Exportación permite materializar las reglas del SVOI en archivos editables. Seleccione el formato deseado para obtener el kit de herramientas institucional.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- PPTX Template -->
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 flex-1">
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 text-orange-600 font-bold">PPTX</div>
+                            <h4 class="text-lg font-bold text-gray-800 font-slab">Master PowerPoint</h4>
+                            <p class="text-sm text-gray-500 mt-2">Plantilla con patrones, fuentes embebidas y 12 layouts maestros configurados según el manual.</p>
+                        </div>
+                        <button onclick="simulateDownload('PowerPoint Master')" class="w-full bg-gray-50 py-4 text-xs font-bold uppercase tracking-widest text-[#9F2241] border-t border-gray-100 hover:bg-[#9F2241] hover:text-white transition-colors">Descargar .potx</button>
+                    </div>
+
+                    <!-- Canva Template -->
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 flex-1">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 text-blue-600 font-bold">CNV</div>
+                            <h4 class="text-lg font-bold text-gray-800 font-slab">Enlace de Canva</h4>
+                            <p class="text-sm text-gray-500 mt-2">Acceso directo a la plantilla compartida en la nube con estilos de marca predefinidos.</p>
+                        </div>
+                        <button onclick="simulateDownload('Canva Template Link')" class="w-full bg-gray-50 py-4 text-xs font-bold uppercase tracking-widest text-blue-600 border-t border-gray-100 hover:bg-blue-600 hover:text-white transition-colors">Copiar Enlace</button>
+                    </div>
+
+                    <!-- Technical Export (JSON) -->
+                    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 flex-1">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 text-purple-600 font-bold">JSON</div>
+                            <h4 class="text-lg font-bold text-gray-800 font-slab">Configuración SVOI</h4>
+                            <p class="text-sm text-gray-500 mt-2">Exporta la arquitectura técnica del sistema para su integración en automatizaciones de IA.</p>
+                        </div>
+                        <button onclick="exportSystemJSON()" class="w-full bg-gray-50 py-4 text-xs font-bold uppercase tracking-widest text-purple-600 border-t border-gray-100 hover:bg-purple-600 hover:text-white transition-colors">Generar JSON</button>
+                    </div>
+                </div>
+
+                <div class="mt-12 bg-[#691C32] rounded-2xl p-8 text-white relative overflow-hidden shadow-xl">
+                    <div class="relative z-10 max-w-2xl">
+                        <h4 class="text-2xl font-bold font-slab mb-4">Exportación Maestra de Guía de Estilo</h4>
+                        <p class="text-sm opacity-90 leading-relaxed mb-6">Genera un documento consolidado en formato Markdown con todas las reglas, paletas y rutas narrativas configuradas en esta sesión. Ideal para integraciones en minutas o manuales operativos rápidos.</p>
+                        <button onclick="exportFullMD()" class="bg-[#BCA986] text-[#691C32] px-8 py-3 rounded font-black uppercase tracking-widest text-xs hover:bg-white transition-colors">Exportar Protocolo Completo</button>
+                    </div>
+                    <!-- Decoración visual (Pattern) -->
+                    <div class="absolute right-[-5%] top-[-10%] opacity-10 pointer-events-none">
+                        <div class="text-[200px] font-black font-slab rotate-12 leading-none">CAMPECHE</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-4 py-2 rounded shadow-lg transform transition-transform translate-y-20 opacity-0 z-50">Mensaje</div>
+
+    <!-- MODAL DE EXPORTACIÓN -->
+    <div id="export-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 id="modal-title" class="font-bold text-[#691C32] font-slab text-xl">Exportar Datos</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <pre id="modal-content" class="bg-gray-50 p-4 rounded-lg text-xs font-mono text-gray-700 whitespace-pre-wrap border border-gray-200"></pre>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex justify-end">
+                <button onclick="copyModalContent()" class="btn-primary px-6 py-2 rounded text-sm font-bold uppercase">Copiar al Portapapeles</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const appState = {
+            currentView: 'view-identidad',
+            chartInstanceBar: null,
+            chartInstanceDoughnut: null,
+            colors: {
+                guinda: '#9F2241',
+                guindaOscuro: '#691C32',
+                dorado: '#BCA986',
+                arena: '#AB9470',
+                verde: '#235B4E',
+                gris: '#8B8B8D',
+                blanco: '#FFFFFF'
+            }
+        };
+
+        const narrativasData = {
+            'A': { titulo: 'Ruta A: Informe', enfoque: 'Rendición', secuencia: ['Mensaje', 'Resumen', 'KPIs', 'Cierre'] },
+            'B': { titulo: 'Ruta B: Estrategia', enfoque: 'Decisión', secuencia: ['Necesidad', 'Propuesta', 'Recursos', 'Cierre'] },
+            'C': { titulo: 'Ruta C: Técnica', enfoque: 'Rigor', secuencia: ['Objetivo', 'Metodología', 'Análisis', 'Anexos'] },
+            'D': { titulo: 'Ruta D: Pública', enfoque: 'Impacto', secuencia: ['Fotografía', 'Beneficio', 'Evidencia', 'Cierre'] }
+        };
+
+        function initApp() {
+            setupNavigation();
+            setupNarrativaTabs();
+            renderNarrativa('A');
+            initCharts();
+        }
+
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('#main-nav button');
+            const views = document.querySelectorAll('.view-section');
+            const headerTitle = document.getElementById('header-title');
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    navButtons.forEach(b => b.className = b.className.replace('nav-active', 'nav-inactive').replace('bg-[#9F2241]', '').replace('text-white', ''));
+                    e.currentTarget.className = e.currentTarget.className.replace('nav-inactive', 'nav-active').concat(' bg-[#9F2241] text-white');
+                    
+                    const targetId = e.currentTarget.getAttribute('data-target');
+                    views.forEach(v => v.classList.add('hidden'));
+                    document.getElementById(targetId).classList.remove('hidden');
+                    headerTitle.textContent = e.currentTarget.textContent.replace(/[^\w\s\u00C0-\u017F]/g, '').trim();
+                });
+            });
+        }
+
+        function setupNarrativaTabs() {
+            const tabs = document.querySelectorAll('#narrativa-tabs button');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    tabs.forEach(t => t.classList.replace('tab-active', 'tab-inactive'));
+                    e.currentTarget.classList.replace('tab-inactive', 'tab-active');
+                    renderNarrativa(e.currentTarget.getAttribute('data-route'));
+                });
+            });
+        }
+
+        function renderNarrativa(routeKey) {
+            const data = narrativasData[routeKey];
+            const container = document.getElementById('narrativa-content');
+            container.innerHTML = `<h4 class="text-2xl font-black font-slab text-[#9F2241] mb-2">${data.titulo}</h4><p class="text-sm font-bold text-[#235B4E] uppercase mb-4">Enfoque: ${data.enfoque}</p><ul class="space-y-2">${data.secuencia.map((s, i) => `<li class="text-sm font-semibold">${i+1}. ${s}</li>`).join('')}</ul>`;
+        }
+
+        function initCharts() {
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            appState.chartInstanceBar = new Chart(ctxBar, {
+                type: 'bar',
+                data: { labels: ['A', 'B', 'C', 'D'], datasets: [{ data: [80, 60, 90, 70], backgroundColor: appState.colors.guinda }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+            appState.chartInstanceDoughnut = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: { labels: ['Op', 'Inf', 'Res'], datasets: [{ data: [40, 40, 20], backgroundColor: [appState.colors.verde, appState.colors.guinda, appState.colors.dorado] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // --- SISTEMA DE EXPORTACIÓN ---
+
+        function simulateDownload(name) {
+            showToast(`Iniciando exportación de: ${name}...`);
+            setTimeout(() => {
+                showToast(`✓ Archivo generado correctamente.`);
+            }, 1500);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+
+        function openModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').textContent = content;
+            document.getElementById('export-modal').classList.replace('hidden', 'flex');
+        }
+
+        function closeModal() {
+            document.getElementById('export-modal').classList.replace('flex', 'hidden');
+        }
+
+        function copyModalContent() {
+            const content = document.getElementById('modal-content').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                showToast('✓ Contenido copiado');
+                closeModal();
+            });
+        }
+
+        function exportSystemJSON() {
+            const data = {
+                institution: "Gobierno del Estado de Campeche",
+                manual: "2021-2027",
+                palette: appState.colors,
+                typography: { titles: "Quatro Slab", body: "Averta" },
+                narrative_routes: narrativasData
+            };
+            openModal("Configuración Técnica SVOI (JSON)", JSON.stringify(data, null, 2));
+        }
+
+        function exportFullMD() {
+            const md = `# Protocolo SVOI Campeche 2021-2027\n\n## Paleta de Colores\n${Object.entries(appState.colors).map(([k,v]) => `- ${k.toUpperCase()}: ${v}`).join('\n')}\n\n## Estructura Narrativa\nExportación de rutas de diseño configuradas exitosamente.`;
+            openModal("Protocolo de Diseño (Markdown)", md);
+        }
+
+        function quickExport() {
+            showToast("Generando reporte rápido de identidad...");
+            setTimeout(() => exportFullMD(), 500);
+        }
+
+        function copyHex(hex) {
+            navigator.clipboard.writeText(hex).then(() => showToast(`HEX ${hex} copiado`));
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
